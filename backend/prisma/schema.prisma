@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Manager {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  
+  queues       Queue[]
+  activityLogs ActivityLog[]
+}
+
+model Queue {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  managerId   String
+  manager     Manager  @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  
+  tokens       Token[]
+  metrics      QueueMetrics?
+  activityLogs ActivityLog[]
+}
+
+model Token {
+  id          String    @id @default(uuid())
+  tokenNumber String
+  personName  String
+  phone       String?
+  status      TokenStatus @default(WAITING)
+  queueId     String
+  queue       Queue     @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  position    Int
+  
+  createdAt   DateTime  @default(now())
+  servedAt    DateTime?
+  cancelledAt DateTime?
+}
+
+model QueueMetrics {
+  id                 String   @id @default(uuid())
+  queueId            String   @unique
+  queue              Queue    @relation(fields: [queueId], references: [id], onDelete: Cascade)
+  averageWaitTime    Int      @default(0) // in seconds
+  averageServiceTime Int      @default(0) // in seconds
+  totalServed        Int      @default(0)
+  totalCancelled     Int      @default(0)
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  eventType   String   // e.g., TOKEN_ADDED, TOKEN_SERVED, TOKEN_CANCELLED, QUEUE_CREATED
+  description String
+  managerId   String
+  manager     Manager  @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  queueId     String?
+  queue       Queue?   @relation(fields: [queueId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+}
+
+enum TokenStatus {
+  WAITING
+  SERVING
+  COMPLETED
+  CANCELLED
+}
