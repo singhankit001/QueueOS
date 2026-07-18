@@ -4,8 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Plus, Users, ArrowRight, Loader2 } from 'lucide-react';
+import { Plus, Users, ArrowRight, Loader2, ListTree } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const queueSchema = z.object({
   name: z.string().min(2, "Queue name is required"),
@@ -61,49 +61,68 @@ export default function QueuesPage() {
     createMutation.mutate(data);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-8 relative z-10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Queues</h1>
-          <p className="text-zinc-400 mt-2">Manage your service queues and customer flow.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm">Queues</h1>
+          <p className="text-muted-foreground mt-2">Manage your service queues and customer flow.</p>
         </div>
         
-        <Button onClick={() => setOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 shadow-lg shadow-indigo-500/20">
-          <Plus className="w-4 h-4" />
+        <Button onClick={() => setOpen(true)} className="luxury-button rounded-xl h-11 px-6 shadow-lg shadow-primary/20">
+          <Plus className="w-4 h-4 mr-2" />
           Create Queue
         </Button>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="bg-zinc-950 border-zinc-800 text-white">
+          <DialogContent className="bg-black/60 backdrop-blur-2xl border-white/10 text-foreground shadow-2xl rounded-3xl">
             <DialogHeader>
-              <DialogTitle>Create new queue</DialogTitle>
-              <DialogDescription className="text-zinc-400">
+              <DialogTitle className="text-xl font-bold">Create new queue</DialogTitle>
+              <DialogDescription className="text-muted-foreground">
                 Set up a new queue to start managing customers.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Queue Name</Label>
-                <Input 
-                  id="name" 
-                  placeholder="e.g., Customer Support" 
-                  {...register('name')} 
-                  className="bg-zinc-900 border-zinc-800"
-                />
-                {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+                <Label htmlFor="name" className="text-zinc-300 ml-1">Queue Name</Label>
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-violet-500/50 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                  <Input 
+                    id="name" 
+                    placeholder="e.g., Customer Support" 
+                    {...register('name')} 
+                    className="relative bg-black/40 border-white/10 focus-visible:ring-0 focus-visible:border-transparent text-white h-12 rounded-xl transition-all"
+                  />
+                </div>
+                {errors.name && <p className="text-sm text-destructive ml-1">{errors.name.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description (Optional)</Label>
-                <Input 
-                  id="description" 
-                  placeholder="e.g., General inquiries and support" 
-                  {...register('description')} 
-                  className="bg-zinc-900 border-zinc-800"
-                />
+                <Label htmlFor="description" className="text-zinc-300 ml-1">Description (Optional)</Label>
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-violet-500/50 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                  <Input 
+                    id="description" 
+                    placeholder="e.g., General inquiries and support" 
+                    {...register('description')} 
+                    className="relative bg-black/40 border-white/10 focus-visible:ring-0 focus-visible:border-transparent text-white h-12 rounded-xl transition-all"
+                  />
+                </div>
               </div>
-              <div className="flex justify-end pt-4">
-                <Button type="submit" disabled={createMutation.isPending} className="bg-indigo-600 hover:bg-indigo-700">
-                  {createMutation.isPending ? 'Creating...' : 'Create Queue'}
+              <div className="pt-2">
+                <Button type="submit" disabled={createMutation.isPending} className="w-full luxury-button rounded-xl h-12">
+                  {createMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Queue'}
                 </Button>
               </div>
             </form>
@@ -113,48 +132,60 @@ export default function QueuesPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : queues?.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[400px] border border-dashed border-zinc-800 rounded-2xl bg-zinc-900/20">
-          <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center mb-4">
-            <Users className="w-8 h-8 text-zinc-500" />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center py-28 glass-panel border-dashed border-white/10 rounded-[40px]"
+        >
+          <div className="w-20 h-20 bg-white/[0.03] rounded-3xl flex items-center justify-center mb-6 shadow-inner border border-white/5">
+            <ListTree className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h3 className="text-xl font-semibold mb-2">No queues found</h3>
-          <p className="text-zinc-500 max-w-sm text-center mb-6">You haven&apos;t created any queues yet. Create your first queue to start managing customers.</p>
-          <Button onClick={() => setOpen(true)} className="bg-white text-zinc-950 hover:bg-zinc-200">
+          <h3 className="text-2xl font-bold text-foreground drop-shadow-sm mb-2">No queues found</h3>
+          <p className="text-muted-foreground max-w-sm text-center mb-8 text-lg">You haven&apos;t created any queues yet. Create your first queue to start managing customers.</p>
+          <Button onClick={() => setOpen(true)} className="h-12 px-8 luxury-button rounded-xl shadow-lg">
             Create your first queue
           </Button>
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
           {queues?.map((queue: { id: string; name: string; description?: string; _count: { tokens: number } }) => (
-            <Card key={queue.id} className="bg-zinc-900/50 border-zinc-800 backdrop-blur-md hover:border-zinc-700 transition-colors group">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-xl">{queue.name}</CardTitle>
-                    <CardDescription className="text-zinc-500 mt-1 line-clamp-1">
-                      {queue.description || "No description"}
-                    </CardDescription>
+            <motion.div variants={itemVariants} key={queue.id}>
+              <Link href={`/dashboard/queues/${queue.id}`} className="block h-full group">
+                <div className="glass-card rounded-3xl p-6 h-full flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] border-white/5 hover:border-primary/30 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-violet-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-foreground drop-shadow-sm group-hover:text-primary transition-colors">{queue.name}</h3>
+                        <p className="text-muted-foreground mt-1 text-sm line-clamp-2">
+                          {queue.description || "No description"}
+                        </p>
+                      </div>
+                      <div className="shrink-0 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 border border-primary/20 shadow-inner group-hover:bg-primary/20 transition-colors">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                        {queue._count.tokens} Waiting
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 border border-indigo-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                    {queue._count.tokens} Waiting
+
+                  <div className="relative z-10 mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                    Manage Queue
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <Link href={`/dashboard/queues/${queue.id}`}>
-                  <Button className="w-full bg-zinc-800 hover:bg-zinc-700 text-white group-hover:bg-indigo-600 transition-colors">
-                    Manage Queue
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );

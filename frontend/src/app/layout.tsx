@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import { BackgroundScene } from "@/components/canvas/BackgroundScene";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-zinc-950 text-zinc-50 antialiased selection:bg-indigo-500/30`}>
+      <body className={`${inter.className} bg-transparent text-foreground antialiased overflow-x-hidden min-h-screen`}>
+        <BackgroundScene />
         <Providers>
           {children}
         </Providers>

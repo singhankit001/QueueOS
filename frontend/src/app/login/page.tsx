@@ -10,8 +10,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -45,58 +46,77 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center p-4">
+      {/* Intense glow behind the card to emphasize depth */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#7928CA]/20 rounded-full blur-[80px] pointer-events-none" />
       
-      <Card className="w-full max-w-md bg-zinc-900/80 border-zinc-800 backdrop-blur-xl shadow-2xl z-10">
-        <CardHeader className="space-y-1 text-center">
-          <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center font-bold text-white text-xl mx-auto mb-4 shadow-lg shadow-indigo-500/30">
-            Q
+      <motion.div 
+        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-[420px] z-10"
+      >
+        <div className="glass-panel rounded-3xl p-8 md:p-10 shadow-[0_8px_40px_rgb(0,0,0,0.4)]">
+          <div className="text-center mb-8">
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 20 }}
+              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-[#7928CA] flex items-center justify-center font-bold text-white text-2xl mx-auto mb-6 shadow-[0_0_30px_rgba(0,112,243,0.4)] border border-white/20"
+            >
+              Q
+            </motion.div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Welcome back</h1>
+            <p className="text-muted-foreground text-sm">Enter your credentials to access your command center.</p>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
-          <CardDescription>
-            <p className="text-zinc-400 mt-2">Enter your credentials to access your manager&apos;s dashboard.</p>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2 text-left">
-              <Label htmlFor="email" className="text-zinc-300">Email</Label>
+          
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-zinc-300 ml-1">Email</Label>
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="m@example.com" 
+                placeholder="admin@queueos.com" 
                 {...register('email')}
-                className="bg-zinc-950/50 border-zinc-800 focus-visible:ring-indigo-500 text-white"
+                className="bg-black/40 border-white/10 focus-visible:ring-primary focus-visible:border-primary text-white h-12 rounded-xl transition-all shadow-inner"
               />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+              {errors.email && <p className="text-sm text-destructive ml-1">{errors.email.message}</p>}
             </div>
-            <div className="space-y-2 text-left">
-              <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between ml-1">
                 <Label htmlFor="password" className="text-zinc-300">Password</Label>
               </div>
               <Input 
                 id="password" 
                 type="password" 
                 {...register('password')}
-                className="bg-zinc-950/50 border-zinc-800 focus-visible:ring-indigo-500 text-white"
+                className="bg-black/40 border-white/10 focus-visible:ring-primary focus-visible:border-primary text-white h-12 rounded-xl transition-all shadow-inner"
               />
-              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+              {errors.password && <p className="text-sm text-destructive ml-1">{errors.password.message}</p>}
             </div>
-            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
+            
+            <div className="pt-2">
+              <Button 
+                type="submit" 
+                className="w-full h-12 rounded-xl bg-foreground text-background hover:bg-zinc-200 font-semibold shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:scale-[1.02] luxury-button" 
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
+              </Button>
+            </div>
           </form>
-        </CardContent>
-        <CardFooter className="flex justify-center border-t border-zinc-800/50 mt-4 pt-6">
-          <p className="text-sm text-zinc-400">
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
-              Sign up
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
+          
+          <div className="mt-8 text-center">
+            <p className="text-sm text-muted-foreground">
+              Don&apos;t have an account?{' '}
+              <Link href="/register" className="text-primary hover:text-white transition-colors font-medium drop-shadow-[0_0_8px_rgba(0,112,243,0.8)]">
+                Request access
+              </Link>
+            </p>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }

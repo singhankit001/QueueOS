@@ -1,58 +1,90 @@
+'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Background gradients */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/20 blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-500/20 blur-[120px]" />
+    <div className="min-h-screen flex flex-col relative overflow-hidden z-10">
       
-      <header className="flex justify-between items-center p-6 lg:px-12 relative z-10 border-b border-zinc-800/50 bg-zinc-950/50 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
+      <header className="flex justify-between items-center p-6 lg:px-12 relative z-50">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex items-center gap-3 glass-panel px-5 py-2.5 rounded-2xl border-white/5"
+        >
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-violet-600 flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(59,130,246,0.5)]">
             Q
           </div>
-          <span className="font-semibold text-xl tracking-tight">QueueOS</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-            Login
+          <span className="font-semibold text-xl tracking-tight text-foreground drop-shadow-sm">QueueOS</span>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="flex items-center gap-4 glass-panel px-4 py-2 rounded-2xl border-white/5"
+        >
+          <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2">
+            Sign In
           </Link>
           <Link href="/register">
-            <Button className="bg-white text-zinc-950 hover:bg-zinc-200 font-medium rounded-full px-6">
+            <Button className="luxury-button rounded-xl h-9 px-5">
               Get Started
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/80 border border-zinc-800 text-sm text-zinc-400 mb-8 backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-          QueueOS 1.0 is now live
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel border-white/10 text-sm text-muted-foreground mb-8 shadow-2xl"
+        >
+          <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+          <span className="bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-transparent font-medium">QueueOS 1.0 is now live</span>
+        </motion.div>
         
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-white to-zinc-500 bg-clip-text text-transparent max-w-4xl">
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent max-w-5xl leading-[1.1] drop-shadow-2xl"
+        >
           Intelligent queue management for modern teams.
-        </h1>
+        </motion.h1>
         
-        <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10 leading-relaxed">
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="text-lg md:text-2xl text-muted-foreground max-w-2xl mb-12 leading-relaxed font-light"
+        >
           Streamline customer flow, gain operational insights, and deliver exceptional service with our enterprise-grade platform.
-        </p>
+        </motion.p>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md mx-auto">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md mx-auto"
+        >
           <Link href="/register" className="w-full sm:w-auto">
-            <Button size="lg" className="w-full bg-white text-zinc-950 hover:bg-zinc-200 rounded-full h-12 px-8 font-medium shadow-xl shadow-white/5">
+            <Button size="lg" className="w-full luxury-button rounded-2xl h-14 px-8 text-base shadow-[0_0_40px_rgba(255,255,255,0.1)] group">
               Start for free
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
           <Link href="/login" className="w-full sm:w-auto">
-            <Button size="lg" variant="outline" className="w-full rounded-full h-12 px-8 border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 backdrop-blur-md text-white">
-              Sign in
+            <Button size="lg" variant="outline" className="w-full rounded-2xl h-14 px-8 border-white/10 bg-white/[0.02] hover:bg-white/[0.05] backdrop-blur-md text-foreground font-medium transition-all hover:scale-[1.02]">
+              View Live Demo
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </main>
     </div>
   );

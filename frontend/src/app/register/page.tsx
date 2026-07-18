@@ -10,8 +10,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -47,66 +48,100 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
-      
-      <Card className="w-full max-w-md bg-zinc-900/80 border-zinc-800 backdrop-blur-xl shadow-2xl z-10">
-        <CardHeader className="space-y-1 text-center">
-          <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center font-bold text-white text-xl mx-auto mb-4 shadow-lg shadow-indigo-500/30">
-            Q
+    <div className="min-h-screen flex items-center justify-center p-4 relative z-10 overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="register-card"
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-md relative"
+        >
+          {/* Decorative glowing orb behind the card */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-primary/20 via-violet-500/20 to-transparent rounded-full blur-[80px] -z-10 animate-pulse" style={{ animationDuration: '4s' }} />
+          
+          <div className="glass-panel border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden backdrop-blur-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50 pointer-events-none" />
+            
+            <div className="p-8 relative z-10">
+              <div className="text-center mb-8">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
+                  className="w-14 h-14 bg-gradient-to-br from-primary to-violet-600 rounded-2xl flex items-center justify-center font-bold text-white text-2xl mx-auto mb-6 shadow-[0_0_30px_rgba(59,130,246,0.5)]"
+                >
+                  Q
+                </motion.div>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm">Create an account</h1>
+                <p className="text-muted-foreground mt-2 font-medium">
+                  Sign up to start managing your queues
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-zinc-300 ml-1">Full Name</Label>
+                  <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-violet-500/50 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                    <Input 
+                      id="name" 
+                      placeholder="John Doe" 
+                      {...register('name')}
+                      className="relative bg-black/40 border-white/10 focus-visible:ring-0 focus-visible:border-transparent text-white h-12 rounded-xl transition-all"
+                    />
+                  </div>
+                  {errors.name && <p className="text-sm text-destructive ml-1">{errors.name.message}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-zinc-300 ml-1">Email</Label>
+                  <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-violet-500/50 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="m@example.com" 
+                      {...register('email')}
+                      className="relative bg-black/40 border-white/10 focus-visible:ring-0 focus-visible:border-transparent text-white h-12 rounded-xl transition-all"
+                    />
+                  </div>
+                  {errors.email && <p className="text-sm text-destructive ml-1">{errors.email.message}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-zinc-300 ml-1">Password</Label>
+                  <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-violet-500/50 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      placeholder="••••••••"
+                      {...register('password')}
+                      className="relative bg-black/40 border-white/10 focus-visible:ring-0 focus-visible:border-transparent text-white h-12 rounded-xl transition-all"
+                    />
+                  </div>
+                  {errors.password && <p className="text-sm text-destructive ml-1">{errors.password.message}</p>}
+                </div>
+
+                <Button type="submit" className="w-full luxury-button rounded-xl h-12 text-base font-semibold mt-4" disabled={loading}>
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create account'}
+                </Button>
+              </form>
+
+              <div className="mt-8 pt-6 border-t border-white/10 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Already have an account?{' '}
+                  <Link href="/login" className="text-primary hover:text-primary/80 font-semibold transition-colors">
+                    Sign in
+                  </Link>
+                </p>
+              </div>
+            </div>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Create an account</CardTitle>
-          <CardDescription className="text-zinc-400">
-            Sign up to start managing your queues
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2 text-left">
-              <Label htmlFor="name" className="text-zinc-300">Name</Label>
-              <Input 
-                id="name" 
-                placeholder="John Doe" 
-                {...register('name')}
-                className="bg-zinc-950/50 border-zinc-800 focus-visible:ring-indigo-500 text-white"
-              />
-              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-            </div>
-            <div className="space-y-2 text-left">
-              <Label htmlFor="email" className="text-zinc-300">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
-                {...register('email')}
-                className="bg-zinc-950/50 border-zinc-800 focus-visible:ring-indigo-500 text-white"
-              />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-            </div>
-            <div className="space-y-2 text-left">
-              <Label htmlFor="password" className="text-zinc-300">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                {...register('password')}
-                className="bg-zinc-950/50 border-zinc-800 focus-visible:ring-indigo-500 text-white"
-              />
-              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-            </div>
-            <Button type="submit" className="w-full bg-white text-zinc-950 hover:bg-zinc-200" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create account'}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center border-t border-zinc-800/50 mt-4 pt-6">
-          <p className="text-sm text-zinc-400">
-            Already have an account?{' '}
-            <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
-              Sign in
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
