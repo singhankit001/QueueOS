@@ -40,7 +40,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       }
     });
 
-    const token = jwt.sign({ id: manager.id, email: manager.email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+    const token = jwt.sign({ id: manager.id, email: manager.email }, process.env.JWT_SECRET || 'supersecretqueueoskey_elite', { expiresIn: '7d' });
 
     res.cookie('token', token, {
       httpOnly: true,
@@ -75,7 +75,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       return;
     }
 
-    const token = jwt.sign({ id: manager.id, email: manager.email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+    const token = jwt.sign({ id: manager.id, email: manager.email }, process.env.JWT_SECRET || 'supersecretqueueoskey_elite', { expiresIn: '7d' });
     
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...managerData } = manager;

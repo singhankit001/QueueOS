@@ -40,8 +40,15 @@ export default function RegisterPage() {
         toast.success('Account created successfully!');
         router.push('/dashboard');
       }
-    } catch (error: unknown) {
-      toast.error((error as { response?: { data?: { error?: string } } }).response?.data?.error || 'Registration failed');
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.error;
+      if (errorMsg) {
+        toast.error(errorMsg);
+      } else if (error.response?.status === 404) {
+        toast.error("API Route not found. Check NEXT_PUBLIC_API_URL.");
+      } else {
+        toast.error("Network Error: Could not connect to the server.");
+      }
     } finally {
       setLoading(false);
     }

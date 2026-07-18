@@ -9,7 +9,7 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
   }
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET || 'supersecretqueueoskey_for_development');
+    const payload = jwt.verify(token, process.env.JWT_SECRET || 'supersecretqueueoskey_elite');
     (req as any).user = payload;
     next();
   } catch (error) {
