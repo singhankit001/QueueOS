@@ -61,7 +61,10 @@ export default function LiveQueuePage() {
 
   // Socket.io integration
   useEffect(() => {
-    const socket = io('http://localhost:5001', { withCredentials: true });
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL 
+      ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, '') 
+      : 'http://localhost:5001';
+    const socket = io(socketUrl, { withCredentials: true });
     
     socket.on('connect', () => {
       socket.emit('join-queue', id);
